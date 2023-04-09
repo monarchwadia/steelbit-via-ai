@@ -1,3 +1,15 @@
+# What this is
+
+This JSONAppFramework is a unique and innovative approach to creating web applications using pure JSON. It allows developers to define the structure, appearance, and behavior of their applications using simple JSON configurations. This framework is particularly cool for several reasons:
+
+1. **Novel way to generate apps**: The JSONAppFramework provides a fresh approach to building web applications using JSON configurations, making it easy for developers to understand and manage their application structure, attributes, and event handlers.
+
+2. **Sample app is an App Builder**: The provided sample app serves as an App Builder, which can be used by humans to create more web applications. This App Builder allows users to visually add elements, edit their properties, and export the JSON configuration of their custom application.
+
+3. **Easier for AI integration**: The JSON-based approach of the JSONAppFramework can potentially make it easier for AI systems, such as GPT-4, to generate and manipulate web applications. By providing a structured and human-readable format, AI systems can better understand and create web applications on top of this framework.
+
+In summary, the JSONAppFramework offers a unique and simplified way to create web applications using JSON, making it easier for both humans and AI systems to build and manipulate applications. The built-in App Builder serves as an excellent example of how the framework can be utilized to create custom applications, further showcasing the power and flexibility of this approach. With its human-readable format and potential for AI integration, JSONAppFramework presents an exciting and innovative solution for web development.
+
 # JSONAppFramework: Beginner-Friendly Documentation
 
 Welcome to JSONAppFramework, a lightweight and easy-to-use framework for building single-page web applications using only JSON configurations. This guide will walk you through the basics of using the App Builder and explain the API to help you get started in building your own custom applications.
