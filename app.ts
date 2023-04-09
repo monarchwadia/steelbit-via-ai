@@ -1,9 +1,20 @@
 // # JSONAppFramework
 
+// ## Requirements
+// 1. As a user, I can see the "App Builder" title when I load the page.
+// 2. As a user, I can enter a title for my custom app in the "Enter your app title..." input field.
+// 3. As a user, I can click the "Add Text" button to add a paragraph element with the default text "Text" to the preview.
+// 4. As a user, I can click the "Add Button" button to add a button element with the default text "Button" to the preview.
+// 5. As a user, I can right-click on any added element in the preview to open a modal with the element's JSON configuration.
+// 6. As a user, I can edit the JSON configuration of an element in the modal and click "Save" to apply the changes to the element in the preview.
+// 7. As a user, I can click "Cancel" in the modal to close it without applying any changes to the element.
+// 8. As a user, I can see the preview of my custom app automatically updates whenever I add new elements or make changes to existing elements.
+
+// ## Intent
 // The intent of this framework is to provide a way to create single-page web applications using only JSON configurations, with the ability to manage global and local state, and handle DOM events at the JSON node level. The framework is designed to be lightweight, easy to understand, and human-readable.
 
+// ## Code
 // Here is the code, along with an appbuilder built in the same framework.
-
 // ---
 
 interface JSONNode {
@@ -16,12 +27,10 @@ interface JSONNode {
   textContent?: string;
 }
 
-
 interface AppState {
   globalState: { [key: string]: any };
   localState: { [nodeId: string]: { [key: string]: any } };
 }
-
 
 class JSONAppFramework {
   private appState: AppState = {
@@ -39,7 +48,6 @@ class JSONAppFramework {
   private buildElement(node: JSONNode): HTMLElement {
     const element = document.createElement(node.tagName);
 
-    // Add this line to set the textContent property if it exists
     if (node.textContent) {
       element.textContent = node.textContent;
     }
@@ -68,7 +76,6 @@ class JSONAppFramework {
             "globalState",
             "localState",
             "updateGlobalState",
-            //@ts-ignore
             node.eventHandlers[event]
           );
           const localState = node.id ? this.appState.localState[node.id] : {};
@@ -148,6 +155,27 @@ const appConfig: JSONNode = {
             `,
           },
         },
+        {
+          tagName: "button",
+          id: "export",
+          textContent: "Export",
+          eventHandlers: {
+            click: `
+              const exportedConfig = {
+                tagName: "div",
+                id: "custom-app",
+                children: [
+                  {
+                    tagName: "h1",
+                    textContent: document.getElementById("app-title").value,
+                  },
+                  ...globalState.elements
+                ]
+              };
+              console.log(exportedConfig);
+            `,
+          },
+        },
       ],
     },
     {
@@ -157,7 +185,7 @@ const appConfig: JSONNode = {
         update: `
           const preview = document.getElementById('preview');
           preview.innerHTML = '';
-          
+
           const appTitle = document.getElementById('app-title').value;
           const h1 = document.createElement('h1');
           h1.textContent = appTitle;
@@ -171,7 +199,7 @@ const appConfig: JSONNode = {
             globalState.editIndex = index;
             updateGlobalState(globalState);
           };
-          
+
           globalState.elements.forEach((elementConfig, index) => {
             const element = document.createElement(elementConfig.tagName);
             if (elementConfig.textContent) {
@@ -245,6 +273,18 @@ const appConfig: JSONNode = {
             },
             {
               tagName: "button",
+              textContent: "Delete",
+              eventHandlers: {
+                click: `
+                  globalState.elements.splice(globalState.editIndex, 1);
+                  updateGlobalState(globalState);
+                  document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+                  document.getElementById('modal').style.display = 'none';
+                `,
+              },
+            },
+            {
+              tagName: "button",
               textContent: "Cancel",
               eventHandlers: {
                 click: `
@@ -258,6 +298,28 @@ const appConfig: JSONNode = {
     },
   ],
 };
+
+// sample
+/*
+{
+  "tagName": "div",
+  "id": "custom-app",
+  "children": [
+    {
+      "tagName": "h1",
+      "textContent": "Cool benas"
+    },
+    {
+      "tagName": "p",
+      "textContent": "Haha"
+    },
+    {
+      "tagName": "button",
+      "textContent": "Button"
+    }
+  ]
+}
+*/
 
 const app = new JSONAppFramework(appConfig);
 app.buildApp();
