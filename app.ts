@@ -1,3 +1,10 @@
+// # JSONAppFramework
+
+// The intent of this framework is to provide a way to create single-page web applications using only JSON configurations, with the ability to manage global and local state, and handle DOM events at the JSON node level. The framework is designed to be lightweight, easy to understand, and human-readable.
+
+// Here is the code, along with an appbuilder built in the same framework.
+
+// ---
 
 interface JSONNode {
   tagName: string;
@@ -6,6 +13,7 @@ interface JSONNode {
   children?: JSONNode[];
   eventHandlers?: { [key: string]: string };
   style?: { [key: string]: string };
+  textContent?: string;
 }
 
 
@@ -30,6 +38,11 @@ class JSONAppFramework {
 
   private buildElement(node: JSONNode): HTMLElement {
     const element = document.createElement(node.tagName);
+
+    // Add this line to set the textContent property if it exists
+    if (node.textContent) {
+      element.textContent = node.textContent;
+    }
 
     if (node.id) {
       element.id = node.id;
@@ -105,6 +118,22 @@ const appConfig: JSONNode = {
       children: [
         {
           tagName: "button",
+          id: "add-text",
+          textContent: "Add Text",
+          eventHandlers: {
+            click: `
+              const newText = {
+                tagName: "p",
+                textContent: "Text",
+              };
+              globalState.elements.push(newText);
+              updateGlobalState(globalState);
+              document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+            `,
+          },
+        },
+        {
+          tagName: "button",
           id: "add-button",
           textContent: "Add Button",
           eventHandlers: {
@@ -114,22 +143,6 @@ const appConfig: JSONNode = {
                 textContent: "Button",
               };
               globalState.elements.push(newButton);
-              updateGlobalState(globalState);
-              document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
-            `,
-          },
-        },
-        {
-          tagName: "button",
-          id: "add-input",
-          textContent: "Add Input Field",
-          eventHandlers: {
-            click: `
-              const newInput = {
-                tagName: "input",
-                attributes: { type: "text" },
-              };
-              globalState.elements.push(newInput);
               updateGlobalState(globalState);
               document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
             `,
@@ -149,8 +162,17 @@ const appConfig: JSONNode = {
           const h1 = document.createElement('h1');
           h1.textContent = appTitle;
           preview.appendChild(h1);
+
+          const openModal = (index) => {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            modal.style.display = 'block';
+            modalContent.value = JSON.stringify(globalState.elements[index], null, 2);
+            globalState.editIndex = index;
+            updateGlobalState(globalState);
+          };
           
-          globalState.elements.forEach((elementConfig) => {
+          globalState.elements.forEach((elementConfig, index) => {
             const element = document.createElement(elementConfig.tagName);
             if (elementConfig.textContent) {
               element.textContent = elementConfig.textContent;
@@ -160,10 +182,79 @@ const appConfig: JSONNode = {
                 element.setAttribute(attr, elementConfig.attributes[attr]);
               }
             }
+
+            element.addEventListener('contextmenu', (e) => {
+              e.preventDefault();
+              openModal(index);
+            });
+
             preview.appendChild(element);
           });
         `,
       },
+    },
+    {
+      tagName: "div",
+      id: "modal",
+      style: {
+        display: "none",
+        position: "fixed",
+        zIndex: "1",
+        left: "0",
+        top: "0",
+        width: "100%",
+        height: "100%",
+        overflow: "auto",
+        backgroundColor: "rgba(0,0,0,0.4)",
+      },
+      children: [
+        {
+          tagName: "div",
+          style: {
+            backgroundColor: "#fefefe",
+            margin: "15% auto",
+            padding: "20px",
+            border: "1px solid #888",
+            width: "80%",
+          },
+          children: [
+            {
+              tagName: "h2",
+              textContent: "Edit Element",
+            },
+            {
+              tagName: "textarea",
+              id: "modal-content",
+              style: {
+                width: "100%",
+                height: "200px",
+              },
+            },
+            {
+              tagName: "button",
+              textContent: "Save",
+              eventHandlers: {
+                click: `
+                  const newElementConfig = JSON.parse(document.getElementById('modal-content').value);
+                  globalState.elements[globalState.editIndex] = newElementConfig;
+                  updateGlobalState(globalState);
+                  document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+                  document.getElementById('modal').style.display = 'none';
+                `,
+              },
+            },
+            {
+              tagName: "button",
+              textContent: "Cancel",
+              eventHandlers: {
+                click: `
+                  document.getElementById('modal').style.display = 'none';
+                `,
+              },
+            },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -172,7 +263,7 @@ const app = new JSONAppFramework(appConfig);
 app.buildApp();
 
 // Initialize the global state
-app.updateGlobalState({ elements: [] });
+app.updateGlobalState({ elements: [], editIndex: -1 });
 
-// Update the task list for the first time
+// Update the preview for the first time
 document.getElementById("preview").dispatchEvent(new CustomEvent("update"));
