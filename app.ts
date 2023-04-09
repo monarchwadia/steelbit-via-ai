@@ -108,75 +108,36 @@ class JSONAppFramework {
 
 const appConfig: JSONNode = {
   tagName: "div",
-  id: "app-builder",
+  id: "main",
   children: [
     {
       tagName: "h1",
       id: "title",
-      textContent: "App Builder",
-    },
-    {
-      tagName: "input",
-      id: "app-title",
-      attributes: {
-        type: "text",
-        placeholder: "Enter your app title...",
-      },
+      textContent: "JSON App Framework",
     },
     {
       tagName: "div",
-      id: "element-list",
+      id: "menu",
       children: [
         {
           tagName: "button",
-          id: "add-text",
-          textContent: "Add Text",
+          id: "app-builder-button",
+          textContent: "Step into App Builder",
           eventHandlers: {
             click: `
-              const newText = {
-                tagName: "p",
-                textContent: "Text",
-              };
-              globalState.elements.push(newText);
-              updateGlobalState(globalState);
-              document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+              document.getElementById("menu").style.display = "none";
+              document.getElementById("app-builder").style.display = "block";
             `,
           },
         },
         {
           tagName: "button",
-          id: "add-button",
-          textContent: "Add Button",
+          id: "preview-appconfig-button",
+          textContent: "Enter AppConfig to Preview",
           eventHandlers: {
             click: `
-              const newButton = {
-                tagName: "button",
-                textContent: "Button",
-              };
-              globalState.elements.push(newButton);
-              updateGlobalState(globalState);
-              document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
-            `,
-          },
-        },
-        {
-          tagName: "button",
-          id: "export",
-          textContent: "Export",
-          eventHandlers: {
-            click: `
-              const exportedConfig = {
-                tagName: "div",
-                id: "custom-app",
-                children: [
-                  {
-                    tagName: "h1",
-                    textContent: document.getElementById("app-title").value,
-                  },
-                  ...globalState.elements
-                ]
-              };
-              console.log(exportedConfig);
+              document.getElementById("menu").style.display = "none";
+              document.getElementById("appconfig-preview").style.display = "block";
             `,
           },
         },
@@ -184,119 +145,242 @@ const appConfig: JSONNode = {
     },
     {
       tagName: "div",
-      id: "preview",
-      eventHandlers: {
-        update: `
-          const preview = document.getElementById('preview');
-          preview.innerHTML = '';
-
-          const appTitle = document.getElementById('app-title').value;
-          const h1 = document.createElement('h1');
-          h1.textContent = appTitle;
-          preview.appendChild(h1);
-
-          const openModal = (index) => {
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modal-content');
-            modal.style.display = 'block';
-            modalContent.value = JSON.stringify(globalState.elements[index], null, 2);
-            globalState.editIndex = index;
-            updateGlobalState(globalState);
-          };
-
-          globalState.elements.forEach((elementConfig, index) => {
-            const element = document.createElement(elementConfig.tagName);
-            if (elementConfig.textContent) {
-              element.textContent = elementConfig.textContent;
-            }
-            if (elementConfig.attributes) {
-              for (const attr in elementConfig.attributes) {
-                element.setAttribute(attr, elementConfig.attributes[attr]);
-              }
-            }
-
-            element.addEventListener('contextmenu', (e) => {
-              e.preventDefault();
-              openModal(index);
-            });
-
-            preview.appendChild(element);
-          });
-        `,
-      },
-    },
-    {
-      tagName: "div",
-      id: "modal",
+      id: "app-builder",
       style: {
         display: "none",
-        position: "fixed",
-        zIndex: "1",
-        left: "0",
-        top: "0",
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-        backgroundColor: "rgba(0,0,0,0.4)",
       },
       children: [
         {
-          tagName: "div",
-          style: {
-            backgroundColor: "#fefefe",
-            margin: "15% auto",
-            padding: "20px",
-            border: "1px solid #888",
-            width: "80%",
+          tagName: "h1",
+          id: "title",
+          textContent: "App Builder",
+        },
+        {
+          tagName: "input",
+          id: "app-title",
+          attributes: {
+            type: "text",
+            placeholder: "Enter your app title...",
           },
+        },
+        {
+          tagName: "div",
+          id: "element-list",
           children: [
             {
-              tagName: "h2",
-              textContent: "Edit Element",
-            },
-            {
-              tagName: "textarea",
-              id: "modal-content",
-              style: {
-                width: "100%",
-                height: "200px",
-              },
-            },
-            {
               tagName: "button",
-              textContent: "Save",
+              id: "add-text",
+              textContent: "Add Text",
               eventHandlers: {
                 click: `
-                  const newElementConfig = JSON.parse(document.getElementById('modal-content').value);
-                  globalState.elements[globalState.editIndex] = newElementConfig;
+                  const newText = {
+                    tagName: "p",
+                    textContent: "Text",
+                  };
+                  globalState.elements.push(newText);
                   updateGlobalState(globalState);
                   document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
-                  document.getElementById('modal').style.display = 'none';
                 `,
               },
             },
             {
               tagName: "button",
-              textContent: "Delete",
+              id: "add-button",
+              textContent: "Add Button",
               eventHandlers: {
                 click: `
-                  globalState.elements.splice(globalState.editIndex, 1);
+                  const newButton = {
+                    tagName: "button",
+                    textContent: "Button",
+                  };
+                  globalState.elements.push(newButton);
                   updateGlobalState(globalState);
                   document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
-                  document.getElementById('modal').style.display = 'none';
                 `,
               },
             },
             {
               tagName: "button",
-              textContent: "Cancel",
+              id: "export",
+              textContent: "Export",
               eventHandlers: {
                 click: `
-                  document.getElementById('modal').style.display = 'none';
+                  const exportedConfig = {
+                    tagName: "div",
+                    id: "custom-app",
+                    children: [
+                      {
+                        tagName: "h1",
+                        textContent: document.getElementById("app-title").value,
+                      },
+                      ...globalState.elements
+                    ]
+                  };
+                  const exportedConfigString = JSON.stringify(exportedConfig, null, 2);
+                  const newWindow = window.open('', '_blank');
+                  newWindow.document.write('<pre>' + exportedConfigString + '</pre>');
+                  newWindow.document.close();
                 `,
               },
             },
           ],
+        },
+        {
+          tagName: "div",
+          id: "preview",
+          eventHandlers: {
+            update: `
+              const preview = document.getElementById('preview');
+              preview.innerHTML = '';
+    
+              const appTitle = document.getElementById('app-title').value;
+              const h1 = document.createElement('h1');
+              h1.textContent = appTitle;
+              preview.appendChild(h1);
+    
+              const openModal = (index) => {
+                const modal = document.getElementById('modal');
+                const modalContent = document.getElementById('modal-content');
+                modal.style.display = 'block';
+                modalContent.value = JSON.stringify(globalState.elements[index], null, 2);
+                globalState.editIndex = index;
+                updateGlobalState(globalState);
+              };
+    
+              globalState.elements.forEach((elementConfig, index) => {
+                const element = document.createElement(elementConfig.tagName);
+                if (elementConfig.textContent) {
+                  element.textContent = elementConfig.textContent;
+                }
+                if (elementConfig.attributes) {
+                  for (const attr in elementConfig.attributes) {
+                    element.setAttribute(attr, elementConfig.attributes[attr]);
+                  }
+                }
+    
+                element.addEventListener('contextmenu', (e) => {
+                  e.preventDefault();
+                  openModal(index);
+                });
+    
+                preview.appendChild(element);
+              });
+            `,
+          },
+        },
+        {
+          tagName: "div",
+          id: "modal",
+          style: {
+            display: "none",
+            position: "fixed",
+            zIndex: "1",
+            left: "0",
+            top: "0",
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
+            backgroundColor: "rgba(0,0,0,0.4)",
+          },
+          children: [
+            {
+              tagName: "div",
+              style: {
+                backgroundColor: "#fefefe",
+                margin: "15% auto",
+                padding: "20px",
+                border: "1px solid #888",
+                width: "80%",
+              },
+              children: [
+                {
+                  tagName: "h2",
+                  textContent: "Edit Element",
+                },
+                {
+                  tagName: "textarea",
+                  id: "modal-content",
+                  style: {
+                    width: "100%",
+                    height: "200px",
+                  },
+                },
+                {
+                  tagName: "button",
+                  textContent: "Save",
+                  eventHandlers: {
+                    click: `
+                      const newElementConfig = JSON.parse(document.getElementById('modal-content').value);
+                      globalState.elements[globalState.editIndex] = newElementConfig;
+                      updateGlobalState(globalState);
+                      document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+                      document.getElementById('modal').style.display = 'none';
+                    `,
+                  },
+                },
+                {
+                  tagName: "button",
+                  textContent: "Delete",
+                  eventHandlers: {
+                    click: `
+                      globalState.elements.splice(globalState.editIndex, 1);
+                      updateGlobalState(globalState);
+                      document.getElementById('preview').dispatchEvent(new CustomEvent('update'));
+                      document.getElementById('modal').style.display = 'none';
+                    `,
+                  },
+                },
+                {
+                  tagName: "button",
+                  textContent: "Cancel",
+                  eventHandlers: {
+                    click: `
+                      document.getElementById('modal').style.display = 'none';
+                    `,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      tagName: "div",
+      id: "appconfig-preview",
+      style: {
+        display: "none",
+      },
+      children: [
+        {
+          tagName: "h2",
+          textContent: "Enter AppConfig JSON",
+        },
+        {
+          tagName: "textarea",
+          id: "appconfig-input",
+          style: {
+            width: "100%",
+            height: "200px",
+          },
+        },
+        {
+          tagName: "button",
+          textContent: "Preview",
+          eventHandlers: {
+            click: `
+              const appConfigString = document.getElementById("appconfig-input").value;
+              const appConfig = JSON.parse(appConfigString);
+              const previewApp = new JSONAppFramework(appConfig);
+              const previewContainer = document.getElementById("appconfig-container");
+              previewContainer.innerHTML = "";
+              previewContainer.appendChild(previewApp.buildApp());
+            `,
+          },
+        },
+        {
+          tagName: "div",
+          id: "appconfig-container",
         },
       ],
     },
