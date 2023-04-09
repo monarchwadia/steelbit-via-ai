@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #000;
+    color: #FFF;
+  }
+  
+  .sidebar {
+    display: block;
+    width: 25%;
+    padding: 20px;
+    background-color: #2c0d54; /* dark violet */
+    box-sizing: border-box;
+    overflow-x: scroll;
+  }
+  
+  .messages {
+    width: 75%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .message {
+    margin-bottom: 20px;
+  }
+  
+  .message.user {
+    background-color: #000; /* black */
+    color: #FFF; /* white */
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .message.gpt-4 {
+    background-color: #800080; /* purple */
+    color: #FFF; /* white */
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .sidebar-toggle {
+    display: none;
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+    }
+    .messages {
+      width: 100%;
+    }
+    .sidebar-toggle {
+      display: block;
+      background-color: #2c0d54; /* dark violet */
+      color: #FFF; /* white */
+    }
+  
+    .mobile-closed {
+      display: none;
+    }
+  }
+  
+  pre {
+    background-color: #1c1c1c;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: scroll;
+  }
+  </style>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('mobile-closed');
+    }
+  </script>
+</head>
+<body>
+  <div class="sidebar-toggle" onclick="toggleSidebar()">System Prompt</div>
+  <div class="sidebar mobile-closed">
+    class JSONApp {
+  constructor(config) {
+    this.config = config;
+    this.globalState = {};
+    this.localStates = {};
+
+    this.initApp();
+  }
+
+  initApp() {
+    document.body.innerHTML = "";
+    this.buildDOM(document.body, this.config);
+  }
+
+  interpolateContent(content, localState, globalState) {
+    return content.replace(
+      /\{(local|global)State\.([a-zA-Z0-9_]+)\}/g,
+      (_, stateType, property) => {
+        const state = stateType === "local" ? localState : globalState;
+        return state[property] || "";
+      }
+    );
+  }
+
+  updateElementContentAndAttributes(el, node, localState, globalState) {
+    if (el) {
+      if (node.type === "text") {
+        el.textContent = this.interpolateContent(
+          node.content,
+          localState,
+          globalState
+        );
+      } else {
+        if (node.attributes) {
+          for (const attr in node.attributes) {
+            el.setAttribute(
+              attr,
+              this.interpolateContent(node.attributes[attr], localState, globalState)
+            );
+          }
+        }
+      }
+    }
+  }
+
+  buildDOM(parent, node) {
+    const el = node.type === "text" ? document.createTextNode("") : document.createElement(node.type);
+
+    const localState = this.localStates[node.id] || {};
+    this.updateElementContentAndAttributes(el, node, localState, this.globalState);
+
+    if (node.events) {
+      for (const eventName in node.events) {
+        const handler = node.events[eventName];
+        el.addEventListener(eventName, (event) => {
+          const localState = this.localStates[node.id] || {};
+          const updateGlobalState = (updates) => {
+            this.globalState = { ...this.globalState, ...updates };
+            this.notifyGlobalStateUpdated();
+          };
+
+          eval(handler)({
+            event,
+            node,
+            localState,
+            updateLocalState: (newState) => {
+              this.localStates[node.id] = {
+                ...localState,
+                ...newState,
+              };
+              this.notifyLocalStateUpdated(node.id);
+            },
+            globalState: this.globalState,
+            updateGlobalState,
+          });
+        });
+      }
+    }
+
+    if (node.children) {
+      for (const childNode of node.children) {
+        childNode.parentId = node.id;
+        this.buildDOM(el, childNode);
+      }
+    }
+
+    parent.appendChild(el);
+  }
+
+  notifyGlobalStateUpdated() {
+    const updateNode = (node) => {
+      const el = document.getElementById(node.id);
+      const localState = this.localStates[node.id] || {};
+      this.updateElementContentAndAttributes(el, node, localState, this.globalState);
+
+      if (node.children) {
+        for (const childNode of node.children) {
+          updateNode(childNode);
+        }
+      }
+    };
+
+    updateNode(this.config);
+  }
+
+  notifyLocalStateUpdated(nodeId) {
+    const updateNode = (node) => {
+      if (node.id === nodeId) {
+        const el = document.getElementById(node.id);
+        const localState = this.localStates[node.id] || {};
+        this.updateElementContentAndAttributes(el, node, localState, this.globalState);
+      }
+
+      if (node.children) {
+        for (const childNode of node.children) {
+          updateNode(childNode);
+        }
+      }
+    };
+
+    updateNode(this.config);
+  }
+}
+
+const appConfig = {
+  id: "root",
+  type: "div",
+  children: [
+    {
+      id: "text",
+      type: "text",
+      content: "Click count: {globalState.clickCount}",
+    },
+    {
+      id: "button",
+      type: "text",
+      content: "Click me!",
+      events: {
+        click: `
+          ({globalState, updateGlobalState}) => {
+            updateGlobalState({ clickCount: (globalState.clickCount || 0) + 1 });
+          }
+        `,
+      },
+    },
+  ],
+};
+  </div>
+  <div class="messages">
+    
+      <div class="message user">
+        <strong>USER:</strong>
+        <div><p>This framework does not work as intended.</p>
+</div>
+      </div>
+      <div class="message assistant">
+        <strong>GPT-4:</strong>
+        <div><p>I&#39;m sorry that you&#39;re having trouble with the framework. To better assist you, please provide more details about the issues you&#39;re encountering, such as specific errors or unexpected behavior. This will help me understand the problem and provide a solution or guidance.</p>
+</div>
+      </div>
+      <div class="message user">
+        <strong>USER:</strong>
+        <div><p>No change in output when i click on an element.</p>
+</div>
+      </div>
+      <div class="message assistant">
+        <strong>GPT-4:</strong>
+        <div><p>It sounds like the issue might be with the event handler not being triggered or updating the state properly. To help you troubleshoot, let&#39;s create a basic example using the JSONApp framework.</p>
+<p>Here&#39;s a simple JSON configuration for a button that updates the global state when clicked:</p>
+<pre><code class="language-javascript">const appConfig = {
+  id: &quot;root&quot;,
+  type: &quot;div&quot;,
+  children: [
+    {
+      id: &quot;text&quot;,
+      type: &quot;text&quot;,
+      content: &quot;Click count: {globalState.clickCount}&quot;,
+    },
+    {
+      id: &quot;button&quot;,
+      type: &quot;button&quot;,
+      attributes: {
+        innerText: &quot;Click me!&quot;,
+      },
+      events: {
+        click: `
+          ({globalState, updateGlobalState}) =&amp;gt; {
+            updateGlobalState({ clickCount: (globalState.clickCount || 0) + 1 });
+          }
+        `,
+      },
+    },
+  ],
+};
+
+const app = new JSONApp(appConfig);
+</code></pre>
+<p>If you use this configuration, clicking the button should update the &quot;Click count&quot; text. If this example doesn&#39;t work as expected, please check for any errors in the browser console and let me know.</p>
+<p>If the example works, compare the event handler in your configuration with this example to identify</p>
+</div>
+      </div>
+      <div class="message user">
+        <strong>USER:</strong>
+        <div><p>nothing happens.</p>
+</div>
+      </div>
+      <div class="message assistant">
+        <strong>GPT-4:</strong>
+        <div><p>Apologies for the confusion. I see the issue now. The <code>type</code> for the button should be &quot;button&quot; instead of &quot;text&quot;. Here&#39;s the corrected configuration:</p>
+<pre><code class="language-javascript">const appConfig = {
+  id: &quot;root&quot;,
+  type: &quot;div&quot;,
+  children: [
+    {
+      id: &quot;text&quot;,
+      type: &quot;text&quot;,
+      content: &quot;Click count: {globalState.clickCount}&quot;,
+    },
+    {
+      id: &quot;button&quot;,
+      type: &quot;button&quot;, // This should be &quot;button&quot; instead of &quot;text&quot;
+      attributes: {
+        innerText: &quot;Click me!&quot;,
+      },
+      events: {
+        click: `
+          ({globalState, updateGlobalState}) =&amp;gt; {
+            updateGlobalState({ clickCount: (globalState.clickCount || 0) + 1 });
+          }
+        `,
+      },
+    },
+  ],
+};
+
+const app = new JSONApp(appConfig);
+</code></pre>
+<p>Now when you click the button, the &quot;Click count&quot; text should update as expected.</p>
+</div>
+      </div>
+      <div class="message user">
+        <strong>USER:</strong>
+        <div><p>Click Count: does not show any numbers.
+The button has no inner text, thus showing just a tiny little rectangle.</p>
+</div>
+      </div>
+      <div class="message assistant">
+        <strong>GPT-4:</strong>
+        <div><p>I apologize for the confusion. It seems that there are a few issues with the original <code>JSONApp</code> implementation.</p>
+<ol>
+<li>The global state is not initialized with default values.</li>
+<li>The button does not have a proper inner text.</li>
+</ol>
+<p>To fix these issues, let&#39;s make some changes to the original <code>JSONApp</code> implementation and the app configuration:</p>
+<pre><code class="language-javascript">class JSONApp {
+  constructor(config) {
+    this.config = config;
+    this.globalState = {};
+    this.localStates = {};
+    
+    // Initialize the global state with default values
+    this.initGlobalState();
+
+    this.initApp();
+  }
+
+  // New method to initialize the global state
+  initGlobalState() {
+    const initNode = (node) =&amp;gt; {
+      if (node.initState) {
+        this.globalState = { ...this.globalState, ...node.initState };
+      }
+
+      if (node.children) {
+        for (const childNode of node.children) {
+          initNode(childNode);
+        }
+      }
+    };
+
+    initNode(this.config);
+  }
+
+  // ... (rest of the code remains the same)
+}
+
+const appConfig = {
+  id: &quot;root&quot;,
+  type: &quot;div&quot;,
+  children: [
+    {
+      id: &quot;text&quot;,
+      type
+</code></pre>
+</div>
+      </div>
+      <div class="message user">
+        <strong>USER:</strong>
+        <div><p>same issue still remains!</p>
+</div>
+      </div>
+  </div>
+</body>
+</html>
