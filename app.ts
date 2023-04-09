@@ -117,6 +117,11 @@ const appConfig: JSONNode = {
     },
     {
       tagName: "div",
+      id: "explainer",
+      textContent: "A framework for building single-page web applications using only JSON configurations.",
+    },
+    {
+      tagName: "div",
       id: "menu",
       children: [
         {
@@ -154,6 +159,19 @@ const appConfig: JSONNode = {
           tagName: "h1",
           id: "title",
           textContent: "App Builder",
+        },
+        {
+          tagName: "div",
+          id: "explainer-app-builder",
+          textContent: "Build your app using the JSON App Framework. Click the \"Export\" button to get the AppConfig JSONNode definition of your app. You can then use this AppConfig to preview your app in the \"AppConfig Preview\" section ( for which you will need to refresh the page ).",
+        },
+        {
+          tagName: "div",
+          id: "explainer-app-builder-2",
+          style: {
+            "padding-top": "10px",
+          },
+          textContent: "NOTE: To edit or delete an element, right click on it.",
         },
         {
           tagName: "input",
