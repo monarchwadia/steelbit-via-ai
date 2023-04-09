@@ -1,5 +1,5 @@
 // # JSONAppFramework
-
+//
 // ## Requirements
 // 1. As a user, I can see the "App Builder" title when I load the page.
 // 2. As a user, I can enter a title for my custom app in the "Enter your app title..." input field.
@@ -7,12 +7,16 @@
 // 4. As a user, I can click the "Add Button" button to add a button element with the default text "Button" to the preview.
 // 5. As a user, I can right-click on any added element in the preview to open a modal with the element's JSON configuration.
 // 6. As a user, I can edit the JSON configuration of an element in the modal and click "Save" to apply the changes to the element in the preview.
-// 7. As a user, I can click "Cancel" in the modal to close it without applying any changes to the element.
-// 8. As a user, I can see the preview of my custom app automatically updates whenever I add new elements or make changes to existing elements.
-
+// 7. As a user, I can click "Delete" in the modal to remove the selected element from the preview.
+// 8. As a user, I can click "Cancel" in the modal to close it without applying any changes to the element.
+// 9. As a user, I can click the "Export" button to output the appConfig JSONNode definition of the new application being built.
+// 10. As a user, I can see the preview of my custom app automatically updates whenever I add new elements or make changes to existing elements.
+//
 // ## Intent
-// The intent of this framework is to provide a way to create single-page web applications using only JSON configurations, with the ability to manage global and local state, and handle DOM events at the JSON node level. The framework is designed to be lightweight, easy to understand, and human-readable.
-
+// The intent of this framework is to provide a way to create single-page web applications using only JSON configurations,
+// with the ability to manage global and local state, and handle DOM events at the JSON node level.
+// The framework is designed to be lightweight, easy to understand, and human-readable.
+//
 // ## Code
 // Here is the code, along with an appbuilder built in the same framework.
 // ---
@@ -298,28 +302,6 @@ const appConfig: JSONNode = {
     },
   ],
 };
-
-// sample
-/*
-{
-  "tagName": "div",
-  "id": "custom-app",
-  "children": [
-    {
-      "tagName": "h1",
-      "textContent": "Cool benas"
-    },
-    {
-      "tagName": "p",
-      "textContent": "Haha"
-    },
-    {
-      "tagName": "button",
-      "textContent": "Button"
-    }
-  ]
-}
-*/
 
 const app = new JSONAppFramework(appConfig);
 app.buildApp();
