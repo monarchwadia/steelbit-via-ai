@@ -1,128 +1,232 @@
-# What this is
+# JSONAppFramework Documentation
 
-This JSONAppFramework is a unique and innovative approach to creating web applications using pure JSON. It allows developers to define the structure, appearance, and behavior of their applications using simple JSON configurations. This framework is particularly cool for several reasons:
+## Overview
 
-1. **Novel way to generate apps**: The JSONAppFramework provides a fresh approach to building web applications using JSON configurations, making it easy for developers to understand and manage their application structure, attributes, and event handlers.
+JSONAppFramework is a lightweight JavaScript framework for building single-page web applications using JSON configurations. The framework allows users to create and manage the DOM, global and local state, and handle DOM events at the JSON node level. It is designed to be easy to understand, human-readable, and extensible.
 
-2. **Sample app is an App Builder**: The provided sample app serves as an App Builder, which can be used by humans to create more web applications. This App Builder allows users to visually add elements, edit their properties, and export the JSON configuration of their custom application.
+## Usage
 
-3. **Easier for AI integration**: The JSON-based approach of the JSONAppFramework can potentially make it easier for AI systems, such as GPT-4, to generate and manipulate web applications. By providing a structured and human-readable format, AI systems can better understand and create web applications on top of this framework.
+To start using JSONAppFramework, you need to create an instance of the `JSONAppFramework` class and provide it with a JSONNode representing the root of your application.
 
-In summary, the JSONAppFramework offers a unique and simplified way to create web applications using JSON, making it easier for both humans and AI systems to build and manipulate applications. The built-in App Builder serves as an excellent example of how the framework can be utilized to create custom applications, further showcasing the power and flexibility of this approach. With its human-readable format and potential for AI integration, JSONAppFramework presents an exciting and innovative solution for web development.
+### JSONNode
 
-# JSONAppFramework: Beginner-Friendly Documentation
+A JSONNode is an object that represents an HTML element and its properties. A JSONNode can have the following properties:
 
-Welcome to JSONAppFramework, a lightweight and easy-to-use framework for building single-page web applications using only JSON configurations. This guide will walk you through the basics of using the App Builder and explain the API to help you get started in building your own custom applications.
+- `tagName`: (string) The type of HTML element, such as "div", "h1", "button", etc.
+- `id`: (optional, string) The unique identifier of the element.
+- `attributes`: (optional, object) A key-value pair of attributes to set on the element.
+- `children`: (optional, array) An array of JSONNode objects representing the children of the element.
+- `eventHandlers`: (optional, object) A key-value pair of event listeners to add to the element. The key is the event name, and the value is the function body to be executed when the event occurs.
+- `style`: (optional, object) A key-value pair of CSS styles to apply to the element.
+- `textContent`: (optional, string) The text content of the element.
 
-## Getting Started with the App Builder
+### AppState
 
-The App Builder is a visual interface that allows you to create elements for your custom application, modify their properties, and export the JSON configuration for your app. Here is a step-by-step guide to help you get started:
+AppState is an object that represents the application state. It has two properties:
 
-1. **Load the App Builder page**: Open the provided HTML file in a web browser, and you will see the "JSON App Framework" title.
+- `globalState`: (object) An object representing the global state of the application. This can be accessed and modified by any event handler.
+- `localState`: (object) An object containing key-value pairs for each element's local state, where the key is the element's `id`, and the value is the local state object.
 
-2. **Enter your app title**: In the "Enter your app title..." input field, type the desired title for your custom app.
+### JSONAppFramework
 
-3. **Add elements to your app**: Click the "Add Text" button to add a paragraph element with the default text "Text" to the preview. Likewise, click the "Add Button" button to add a button element with the default text "Button" to the preview.
+The main class of the framework. It is responsible for building the DOM from the JSONNode tree and managing the application state. It has the following methods:
 
-4. **Edit elements**: Right-click on any added element in the preview to open a modal with the element's JSON configuration. In the modal, you can edit the JSON configuration, such as changing the `textContent` property. Click "Save" to apply the changes to the element in the preview.
+- `constructor(rootNode: JSONNode)`: Initializes a new JSONAppFramework instance with the provided rootNode.
+- `buildApp()`: Builds the DOM elements based on the rootNode and appends them to the document body.
+- `updateGlobalState(newState: { [key: string]: any })`: Updates the global state with the provided newState object.
 
-5. **Delete elements**: In the modal, click "Delete" to remove the selected element from the preview.
-
-6. **Cancel editing**: Click "Cancel" in the modal to close it without applying any changes to the element.
-
-7. **Export your app**: When you're satisfied with your custom app, click the "Export" button to output the `appConfig` JSONNode definition of your new application.
-
-8. **Preview your custom app**: The preview of your custom app automatically updates whenever you add new elements or make changes to existing elements.
-
-## API Documentation
-
-The JSONAppFramework is built around the concept of JSONNode objects, which represent the structure and attributes of HTML elements in a JSON format. The framework also manages the application state, including global and local states for each element.
-
-### JSONNode Interface
-
-```typescript
-interface JSONNode {
-  tagName: string;
-  id?: string;
-  attributes?: { [key: string]: string };
-  children?: JSONNode[];
-  eventHandlers?: { [key: string]: string };
-  style?: { [key: string]: string };
-  textContent?: string;
-}
-```
-
-A JSONNode object has the following properties:
-
-- `tagName`: The HTML tag name of the element (e.g., "div", "p", "button").
-- `id`: (Optional) The unique identifier for the element.
-- `attributes`: (Optional) An object containing key-value pairs for element attributes, such as "src" for an image or "type" for an input.
-- `children`: (Optional) An array of JSONNode objects representing the child elements.
-- `eventHandlers`: (Optional) An object containing key-value pairs for event handlers, such as "click" or "mouseenter". The value is a string containing JavaScript code to be executed when the event is triggered.
-- `style`: (Optional) An object containing key-value pairs for CSS styles to be applied to the element.
-- `textContent`: (Optional) The text content of the element.
-
-### AppState Interface
-
-```typescript
-interface AppState {
-  globalState: { [key: string]: any };
-  localState: { [nodeId: string]: { [key: string]: any } };
-}
-```
-
-The AppState object has the following properties:
-
-- `globalState`: An object containing key-value pairs representing the global state of the application.
-- `localState`: An object containing key-value pairs for each element's local state, identified by their `id`.
-
-### JSONAppFramework Class
-
-The JSONAppFramework class is the core of the framework, responsible for building and managing the application. It takes a JSONNode as its input, which represents the root node of the application.
-
-```typescript
-class JSONAppFramework {
-  constructor(private rootNode: JSONNode) {}
-  public buildApp(): void {}
-  private buildElement(node: JSONNode): HTMLElement {}
-  private updateGlobalState(newState: { [key: string]: any }): void {}
-}
-```
-
-- `constructor(rootNode: JSONNode)`: Initializes a new instance of the JSONAppFramework with the given JSONNode as the root node of the application.
-- `buildApp()`: Builds the application and appends it to the document body.
-- `buildElement(node: JSONNode)`: A private method that recursively builds an HTMLElement from a given JSONNode and its children.
-- `updateGlobalState(newState: { [key: string]: any })`: A private method that updates the global state with the given new state object.
-
-## Example Usage
-
-1. Create a JSONNode object representing the structure of your application:
+## Example
 
 ```javascript
-const appConfig: JSONNode = {
+const rootNode: JSONNode = {
   tagName: "div",
-  id: "main",
+  id: "app",
   children: [
     {
       tagName: "h1",
-      id: "title",
-      textContent: "My Custom App",
+      textContent: "Hello, World!",
     },
-    // ... other elements
+    {
+      tagName: "button",
+      textContent: "Click me",
+      eventHandlers: {
+        click: `
+          alert('Button clicked!');
+        `,
+      },
+    },
+  ],
+};
+
+const app = new JSONAppFramework(rootNode);
+app.buildApp();
+```
+
+This example creates a simple application with an "Hello, World!" header and a button that shows an alert when clicked.
+
+## Adding Event Handlers
+
+To add an event handler to a JSONNode, add an `eventHandlers` property to the JSONNode object, and provide a key-value pair with the event name and the function body to be executed when the event occurs.
+
+Example:
+
+```javascript
+{
+  tagName: "button",
+  textContent: "Click me",
+  eventHandlers: {
+    click: `
+      alert('Button clicked!');
+    `,
+  },
+}
+```
+
+In this example, the button element has a click event handler that shows an alert when the button is clicked.
+
+## Updating Global and Local State
+
+To update the global state, use the `updateGlobalState` method provided to the event handler. To access the global and local state inside an event handler, use the `globalState` and `localState` parameters.
+
+Example:
+
+```javascript
+{
+  tagName: "button",
+  id: "counter",
+  textContent: "0",
+  eventHandlers: {
+    click: `
+      const newCount = localState.count + 1;
+      updateGlobalState({ lastClicked: "counter" });
+      document.getElementById('counter').textContent = newCount;
+      localState.count = newCount;
+    `,
+  },
+}
+```
+
+In this example, the button element has a click event handler that increments a counter value in the local state, updates the global state with the last clicked button's id, and updates the button's text content.
+
+## Styling Elements
+
+To style a JSONNode, add a `style` property to the JSONNode object, and provide a key-value pair with the CSS property name and the value.
+
+Example:
+
+```javascript
+{
+  tagName: "div",
+  id: "container",
+  style: {
+    backgroundColor: "#f0f0f0",
+    padding: "10px",
+    borderRadius: "5px",
+  },
+  children: [...],
+}
+```
+
+In this example, the `container` element has a light gray background color, 10px padding, and 5px border radius.
+
+## Extending the Framework
+
+The JSONAppFramework is designed to be extensible and can be easily modified to include new functionality or integrate with other libraries and frameworks. Here are some ideas on how you can extend the framework:
+
+### Custom Components
+
+To create custom components, you can create a new JSONNode object that represents your custom component and include it in the children array of a parent JSONNode. You can also create reusable functions that return JSONNode objects with predefined properties and event handlers.
+
+Example:
+
+```javascript
+function createCounterButton(id: string): JSONNode {
+  return {
+    tagName: "button",
+    id: id,
+    textContent: "0",
+    eventHandlers: {
+      click: `
+        const newCount = localState.count + 1;
+        updateGlobalState({ lastClicked: "${id}" });
+        document.getElementById('${id}').textContent = newCount;
+        localState.count = newCount;
+      `,
+    },
+  };
+}
+
+const rootNode: JSONNode = {
+  tagName: "div",
+  id: "app",
+  children: [
+    createCounterButton("counter1"),
+    createCounterButton("counter2"),
   ],
 };
 ```
 
-2. Initialize a new instance of the JSONAppFramework with your JSONNode object:
+In this example, we created a reusable `createCounterButton` function that returns a JSONNode object for a counter button with a provided id.
+
+### Integration with Other Libraries and Frameworks
+
+You can integrate JSONAppFramework with other libraries and frameworks by including their functionality in the JSONNode event handlers or by extending the JSONAppFramework class to include additional functionality.
+
+Example (integration with axios):
 
 ```javascript
-const app = new JSONAppFramework(appConfig);
+{
+  tagName: "button",
+  textContent: "Fetch data",
+  eventHandlers: {
+    click: `
+      axios.get('https://api.example.com/data')
+        .then((response) => {
+          updateGlobalState({ data: response.data });
+          document.getElementById('data-container').dispatchEvent(new CustomEvent('update'));
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+    `,
+  },
+}
 ```
 
-3. Build and display your custom app:
+In this example, we integrated the JSONAppFramework with the axios library to fetch data from an API when the button is clicked.
+
+### Custom Event Handlers
+
+You can create custom event handlers for your JSONNodes by adding new properties to the `eventHandlers` object and triggering them using `dispatchEvent` on the corresponding DOM element.
+
+Example:
 
 ```javascript
-app.buildApp();
+{
+  tagName: "div",
+  id: "data-container",
+  eventHandlers: {
+    update: `
+      const dataContainer = document.getElementById('data-container');
+      dataContainer.innerHTML = '';
+      globalState.data.forEach((item) => {
+        const itemElement = document.createElement('div');
+        itemElement.textContent = item.name;
+        dataContainer.appendChild(itemElement);
+      });
+    `,
+  },
+}
 ```
 
-Now you have a basic understanding of JSONAppFramework and the App Builder. You can use this knowledge to create your own custom applications using JSON configurations. Happy coding!
+In this example, we created a custom `update` event handler for the `data-container` element that updates its content based on the global state's data property. We can trigger this event using `dispatchEvent`:
+
+```javascript
+document.getElementById("data-container").dispatchEvent(new CustomEvent("update"));
+```
+
+This will update the content of the `data-container` element according to the current global state.
+
+## Closing Thoughts
+
+The JSONAppFramework is a versatile and lightweight tool for building single-page web applications using JSON configurations. It allows for quick prototyping and easy collaboration due to its human-readable format. By extending the framework, integrating it with other libraries, and creating custom components, you can build a wide variety of web applications to suit your needs.
