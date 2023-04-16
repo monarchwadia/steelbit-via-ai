@@ -4,10 +4,10 @@
   "license": "MIT",
   "dependencies": {
     "marked": "^4.3.0",
-    "parcel": "^2.8.3"
+    "vite": "^4.2.1"
   },
   "scripts": {
-    "dev": "parcel index.html",
-    "build": "parcel build index.html"
+    "dev": "vite",
+    "build": "vite build"
   }
 }
